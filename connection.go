@@ -1,13 +1,15 @@
 package main
 
 import (
+	"encoding/json"
+
 	"github.com/gofiber/websocket/v2"
 )
 
 type Connection struct {
 	id                 string
 	socket             *websocket.Conn
-	requestMessageSend chan string
+	requestMessageSend chan []byte
 	disconnect         func()
 }
 
@@ -15,7 +17,7 @@ func newConnection(id string, socket *websocket.Conn, disconnect func()) *Connec
 	return &Connection{
 		id:                 id,
 		socket:             socket,
-		requestMessageSend: make(chan string),
+		requestMessageSend: make(chan []byte),
 		disconnect:         disconnect,
 	}
 }
@@ -27,8 +29,14 @@ func (connection *Connection) handleIncomingMessages() {
 			connection.disconnect()
 			break
 		}
-		if mtype == websocket.TextMessage {
-			connection.socket.WriteMessage(mtype, msg)
+		if mtype == websocket.BinaryMessage {
+			result := struct {
+				Relay string `json:"relay"`
+			}{}
+			json.Unmarshal(msg, &result)
+			if result.Relay != "" {
+				relay(result.Relay, msg)
+			}
 		}
 	}
 }
@@ -41,7 +49,7 @@ func (connection *Connection) handleMessageSending() {
 			connection.socket.Close()
 			return
 		}
-		connection.socket.WriteMessage(websocket.TextMessage, []byte(message))
+		connection.socket.WriteMessage(websocket.BinaryMessage, message)
 
 	}
 }

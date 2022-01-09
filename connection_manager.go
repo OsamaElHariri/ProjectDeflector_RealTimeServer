@@ -30,7 +30,7 @@ func (connectionManager *ConnectionManager) runManager() {
 	}
 }
 
-func (connectionManager *ConnectionManager) notify(id string, msg string) {
+func (connectionManager *ConnectionManager) notify(id string, msg []byte) {
 	if connection, ok := connectionManager.connections[id]; ok {
 		connection.requestMessageSend <- msg
 	}

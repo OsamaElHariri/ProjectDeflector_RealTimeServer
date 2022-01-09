@@ -17,8 +17,8 @@ func main() {
 		return c.SendString("Hello, World!!!")
 	})
 
-	app.Get("/notify/:id", func(c *fiber.Ctx) error {
-		connectionManager.notify(c.Params("id"), "msg")
+	app.Post("/notify/:id", func(c *fiber.Ctx) error {
+		connectionManager.notify(c.Params("id"), c.Body())
 		return c.SendString("Ok")
 	})
 
@@ -34,5 +34,5 @@ func main() {
 		connection.handleMessageSending()
 	}))
 
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(app.Listen(":3002"))
 }
