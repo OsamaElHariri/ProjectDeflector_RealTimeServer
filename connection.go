@@ -34,7 +34,16 @@ func (connection *Connection) handleIncomingMessages() {
 				Relay string `json:"relay"`
 			}{}
 			json.Unmarshal(msg, &result)
-			if result.Relay != "" {
+			if result.Relay == "/realtime/status" {
+				res, err := json.Marshal(map[string]interface{}{
+					"event":  "realtime_status",
+					"status": "ok",
+				})
+				if err == nil {
+					connection.requestMessageSend <- res
+				}
+
+			} else if result.Relay != "" {
 				relay(result.Relay, msg)
 			}
 		}
