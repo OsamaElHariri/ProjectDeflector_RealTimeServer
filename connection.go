@@ -29,7 +29,7 @@ func (connection *Connection) handleIncomingMessages() {
 			connection.disconnect()
 			break
 		}
-		if mtype == websocket.BinaryMessage {
+		if mtype == websocket.TextMessage {
 			result := struct {
 				Relay string `json:"relay"`
 			}{}
@@ -58,7 +58,7 @@ func (connection *Connection) handleMessageSending() {
 			connection.socket.Close()
 			return
 		}
-		connection.socket.WriteMessage(websocket.BinaryMessage, message)
+		connection.socket.WriteMessage(websocket.TextMessage, message)
 
 	}
 }
