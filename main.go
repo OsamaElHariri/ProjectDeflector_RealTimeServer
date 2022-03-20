@@ -17,7 +17,7 @@ func main() {
 		return c.SendString("Hello, World!!!")
 	})
 
-	app.Post("/notify/:id", func(c *fiber.Ctx) error {
+	app.Post("/internal/notify/:id", func(c *fiber.Ctx) error {
 		connectionManager.notify(c.Params("id"), c.Body())
 		return c.SendString("Ok")
 	})
