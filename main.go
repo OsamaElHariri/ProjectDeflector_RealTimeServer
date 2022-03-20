@@ -13,6 +13,14 @@ func main() {
 	connectionManager := newConnectionManager()
 	go connectionManager.runManager()
 
+	app.Use("/", func(c *fiber.Ctx) error {
+		userId := c.Get("x-user-id")
+		if userId != "" {
+			c.Locals("userId", userId)
+		}
+		return c.Next()
+	})
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!!!")
 	})
@@ -22,13 +30,13 @@ func main() {
 		return c.SendString("Ok")
 	})
 
-	app.Get("/ws/:id", websocket.New(func(c *websocket.Conn) {
-		id := c.Params("id")
-		connection := newConnection(id, c, func() {
-			connectionManager.unregister <- id
+	app.Get("/ws", websocket.New(func(c *websocket.Conn) {
+		playerId := c.Locals("userId").(string)
+		connection := newConnection(playerId, c, func() {
+			connectionManager.unregister <- playerId
 		})
 		connectionManager.register <- connection
-		log.Printf("Registering %s", id)
+		log.Printf("Registering %s", playerId)
 
 		go connection.handleIncomingMessages()
 		connection.handleMessageSending()
