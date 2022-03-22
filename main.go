@@ -4,11 +4,13 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/websocket/v2"
 )
 
 func main() {
 	app := fiber.New()
+	app.Use(recover.New())
 
 	connectionManager := newConnectionManager()
 	go connectionManager.runManager()
