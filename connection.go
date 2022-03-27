@@ -43,8 +43,6 @@ func (connection *Connection) handleIncomingMessages() {
 					connection.requestMessageSend <- res
 				}
 
-			} else if result.Relay != "" {
-				relay(result.Relay, msg)
 			}
 		}
 	}
